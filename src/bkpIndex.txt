@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>CtscWebchat</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+    integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+  <style>
+    select,
+    option {
+      width: 90%;
+      height: 30px;
+      font-size: 20px;
+      background-color: white;
+      margin: 5px;
+    }
+  </style>
+  <script>/*
+function stripHtml(s){
+return s.replace(/(<([^>]+)>)/ig,"")
+}
+function makeDropDown(options) {
+var q = options.shift();
+var s = "";
+s += q+'<br/><select placeholder=" '+ q + '" ><option disabled selected></option>'
+for (var i = 0; i < options.length; ++i) {
+  s += '<option>' + stripHtml(options[i]) + '</option>'
+}
+s += '</select>';
+return s;
+}
+jQuery(document).ready(function(){
+var radioSection = jQuery('.form-list li:nth-child(2)');
+var labels = jQuery(radioSection).children("label")
+var options = []
+labels.each(function(o){
+options.push( stripHtml(labels[o].innerHTML) )
+})
+jQuery('.form-list li:nth-child(2)').html(makeDropDown(options));
+})
+*/
+  </script>
+</head>
+
+<body>
+
+  <app-root></app-root>
+  <script>
+    /*
+    function parseText(text) {
+      return text.split('\n');
+    }
+
+    function webchat_init(customParams) {
+      const version = '0.1.20';
+
+      const defaultParams = {
+        uuid: '',
+        tenant: '',
+        channel: '',
+        stylesheetURL: '', // should either be absolute starting with 'https:', or path relative to site root starting with '/'
+        busPublishInfo: null,
+        busPublishLanguage: 'en', // use 'cy' for Welsh
+        domain: 'https://vcc-eu4.8x8.com',
+        path: '/.',
+        buttonContainerId: 'ctsc-web-chat',
+        busHandlerURL: 'https://chatbuilder.netlify.com/assets/javascript/busHandler.js',
+        // 'https://cdn.jsdelivr.net/npm/@hmcts/ctsc-web-chat@0.1.20/assets/javascript/busHandler.js',
+        // 'http://80.169.156.170:4200/assets/javascript/busHandler.js',
+        chatDownAction: 'showMessage', // use 'showMessage' or 'hideHeader'
+        chatDownText: 'The web chat service is temporarily unavailable, please try again later.',
+        additionalText: '',
+        additionalTextNoAgent: 'No agents are available, please try again later.',
+        additionalTextTooBusy: 'All our web chat agents are busy helping other people. Please try again later or contact us using one of the ways below.',
+        additionalTextClosed: 'The web chat is now closed. Come back Monday to Friday 9:30am to 5pm.\nOr contact us using one of the ways below.',
+        additionalTextChatAlreadyOpen: 'A web chat window is already open.',
+        linkTextAgent: 'Start web chat (opens in a new window)',
+        chatLinkFocusable: true,
+        btnNoAgents: '/aG1jdHNzdGFnaW5nMDE/button_7732814745cac6f4603c4d1.53357933/img/logo',
+        btnAgentsBusy: '/aG1jdHNzdGFnaW5nMDE/button_2042157415cc19c95669039.65793052/img/logo',
+        btnServiceClosed: '/aG1jdHNzdGFnaW5nMDE/button_20199488815cc1a89e0861d5.73103009/img/logo'
+      };
+
+      let params = Object.assign({}, defaultParams, customParams);
+
+      // alert("in pre-webchat params.busHandlerURL = "+params.busHandlerURL)
+
+      window.__8x8Chat = {
+        uuid: params.uuid,
+        tenant: params.tenant,
+        channel: params.channel,
+        domain: params.domain,
+        path: params.path,
+        buttonContainerId: params.buttonContainerId,
+        align: 'right',
+        stylesheetURL:
+          params.stylesheetURL.startsWith('https:') ? params.stylesheetURL :
+            (params.stylesheetURL.startsWith('/') && location.protocol === 'https') ?
+              'https://' + window.location.hostname + ':' + window.location.port + params.stylesheetURL :
+              'https://cdn.jsdelivr.net/npm/@hmcts/ctsc-web-chat@' + version + '/assets/css/hmcts-webchat.min.css',
+        busHandlerURL: params.busHandlerURL,
+        chatDownAction: params.chatDownAction,
+        chatDownText: params.chatDownText,
+        additionalText: params.additionalText,
+        chatLinkFocusable: params.chatLinkFocusable,
+        onInit: function (bus) {
+          // alert("chat init")
+          window.bus = bus;
+
+          const chatContainer = document.querySelector('#' + window.__8x8Chat.buttonContainerId);
+          const replaceChatLink = function () {
+            const chatImg = document.querySelector('#' + window.__8x8Chat.buttonContainerId + ' img');
+            const chatLink = document.querySelector('#' + window.__8x8Chat.buttonContainerId + ' a');
+
+            if (chatLink && !window.__8x8Chat.chatLinkFocusable) {
+              chatLink.setAttribute('tabindex', '-1');
+            }
+
+            if (chatImg) {
+              const chatImgBtn = chatImg.src.split('CHAT')[1];
+              const paragraph = document.createElement('p');
+              let additionalTextArray;
+
+              chatLink.innerHTML = null;
+
+              if (chatImgBtn === params.btnNoAgents) {
+                additionalTextArray = parseText(params.additionalTextNoAgent);
+              } else if (chatImgBtn === params.btnAgentsBusy) {
+                additionalTextArray = parseText(params.additionalTextTooBusy);
+              } else if (chatImgBtn === params.btnServiceClosed) {
+                additionalTextArray = parseText(params.additionalTextClosed);
+              } else {
+                const chatLinkParagraph = document.createElement('p');
+                chatLink.innerText = params.linkTextAgent;
+                chatLink.parentNode.insertBefore(chatLinkParagraph, chatLink);
+                chatLinkParagraph.appendChild(chatLink);
+                additionalTextArray = parseText(params.additionalText);
+              }
+
+              additionalTextArray.forEach((line, index) => {
+                const br = document.createElement('br');
+                const additionalTextLine = document.createTextNode(line);
+                paragraph.appendChild(additionalTextLine);
+                if (index < additionalTextArray.length - 1) {
+                  paragraph.appendChild(br);
+                }
+              });
+
+              chatContainer.appendChild(paragraph);
+            }
+          };
+
+          if (params.busPublishInfo) {
+            bus.publish('customer:set-info', params.busPublishInfo);
+          }
+          bus.publish('chat:set-language', params.busPublishLanguage);
+
+          if (chatContainer) {
+            replaceChatLink();
+
+            const mutationObserver = new MutationObserver(replaceChatLink);
+            mutationObserver.observe(chatContainer, {
+              childList: true
+            });
+          }
+        }
+      };
+
+      (function () {
+        const se = document.createElement('script');
+        se.type = 'text/javascript';
+        se.async = true;
+        se.src = window.__8x8Chat.domain + window.__8x8Chat.path + '/CHAT/common/js/chat.js';
+
+        const os = document.getElementsByTagName('script')[0];
+        os.parentNode.insertBefore(se, os);
+
+        setTimeout(function () {
+          const chatContainer = document.querySelector('#' + window.__8x8Chat.buttonContainerId);
+
+          if (chatContainer.innerHTML === '') {
+            switch (window.__8x8Chat.chatDownAction) {
+              case 'showMessage':
+                chatContainer.innerHTML = window.__8x8Chat.chatDownText;
+                break;
+              case 'hideHeader':
+                const chatHeader = document.querySelector('#' + window.__8x8Chat.buttonContainerId + '-header');
+                chatHeader.parentNode.removeChild(chatHeader);
+                break;
+            }
+          }
+        }, 2000);
+      })();
+    }
+    */
+  </script>
+
+<script src='https://chatbuilder.netlify.com/assets/javascript/hmcts-webchat.js'></script>
+<script nonce="nonce">
+    // alert("index.html")
+
+    webchat_init({
+      /* SSCS
+      uuid: "script_2564970475c5c433ab52c08.45062085",
+      tenant: "aG1jdHNzdGFnaW5nMDE",
+      channel: "SSCS",
+*/
+      /* CO-BROWSING
+      uuid: "script_16322225195d132a3928f877.72935270",
+      tenant: "aG1jdHNzdGFnaW5nMDE",
+      channel: "Co_browsing",
+      */
+
+      /* wc_template
+      uuid: "script_18101861225d0775fdb65ef7.98275198",
+      tenant: "aG1jdHNzdGFnaW5nMDE",
+      channel: "wc_template",
+      */
+
+      /* droplist */
+      uuid: "script_15415639185cdbfe3f555a12.69921943",
+      tenant: "aG1jdHNzdGFnaW5nMDE",
+      channel: "drop",
+
+
+      buttonContainerId: "ctsc-web-chat",
+      stylesheetURL: 'https://chatbuilder.netlify.com/assets/css/styles.css',
+      busHandlerURL: 'https://chatbuilder.netlify.com/assets/javascript/busHandler.js'
+    });
+  </script>
+</body>
+
+</html>
